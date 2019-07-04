@@ -1,6 +1,6 @@
 [//]: # (Image References)
 
-[image1]: ./Trials.PNG "Screenshot of Simulator Receiving State Estimates from ExtendedKF program"
+[image1]: ./Trials.png "Table of Trials"
 
 # Danny's PID Controller Project
 From Self-Driving Car Engineer Nanodegree Program
