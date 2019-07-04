@@ -29,14 +29,30 @@ string hasData(string s) {
   }
   return "";
 }
-
+//Adding ability to pass in coefficients from command line when running program
+//int main(int argc, char *argv[]) {
 int main() {
+
   uWS::Hub h;
 
   PID pid;
   /**
    * TODO: Initialize the pid variable.
    */
+
+  
+  //using code from video-walk-thru
+  double init_Kp = -0.15;  //p too large resulted in oscillations particularly at turns, too small resulted in lag at turns
+  double init_Ki = 0;
+  double init_Kd = -0.90;  //6x ratio d-to-p worked well
+  
+  //used this to try lots of different values to determine the ones I wanted to use
+  //double init_Kp = -1*atof(argv[1]);
+  //double init_Ki = -1*atof(argv[2]);
+  //double init_Kd = -1*atof(argv[3]);
+
+
+  pid.Init(init_Kp, init_Ki, init_Kd);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
@@ -51,7 +67,8 @@ int main() {
 
         string event = j[0].get<string>();
 
-        if (event == "telemetry") {
+		
+		if (event == "telemetry") {
           // j[1] is the data JSON object
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
@@ -63,6 +80,14 @@ int main() {
            * NOTE: Feel free to play around with the throttle and speed.
            *   Maybe use another PID controller to control the speed!
            */
+
+		  //Debug - can set it directly here to see result in simulator
+		  //steer_value = -1*cte;
+
+		  //using code from video walk-thru
+		  //call the UpdateError function and then set the steer_value to the TotalError
+		  pid.UpdateError(cte);
+		  steer_value = pid.TotalError();
           
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
